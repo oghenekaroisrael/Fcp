@@ -14,6 +14,9 @@ if(!isset($_SESSION['userSession'])){
   $dept = Database::getInstance()->get_name_from_id("name","departments","department_id",$deptID);
   $bid = Database::getInstance()->get_name_from_id("bulletin","departments","department_id",$deptID);
   $req = Database::getInstance()->get_name_from_id("gradRequirements","bulletin","bulletinID",$bid);
+  if (isset($_GET['n'])) {
+    Database::getInstance()->notify_viewed($_GET['n']);
+  }
 }
 ?>
 <body class="">
@@ -28,6 +31,30 @@ if(!isset($_SESSION['userSession'])){
               <div class="card-header ">
                 <h2 class="card-title">My Transcript</h2>
                 <H4>Department: <?php echo $dept; ?> </H4>
+                <div class="row">
+                  <?php 
+                    $dur = Database::getInstance()->get_name_from_id("duration","departments","department_id",$deptID)*100;
+                    for ($i=100; $i <= $dur; $i+=100) { 
+                      ?>
+                        <div class="col-md-3">
+                          <center><h4><?php echo $i; ?> Level GPA</h4></center>
+                          <div class="row">
+                            <div class="col-md-4">
+                              <h4>1<sup>st</sup>: <i><?php echo $k = Database::getInstance()->calcGPA($matNumber,$i,1);?></i></h4>
+                            </div>
+                            <div class="col-md-4">
+                              <h4>2<sup>nd</sup>: <i><?php echo $j = Database::getInstance()->calcGPA($matNumber,$i,2);?></i></h4>
+                            </div>
+                            
+                            <div class="col-md-4">
+                              <h4>CGPA: <i><?php echo $tot = ($k+$j)/2;?></i></h4>
+                            </div>
+                          </div>
+                        </div>
+                      <?php
+                    }
+                  ?>
+                </div>
                 <div id="get_dets"></div>
               </div>
               <div class="card-body">
@@ -65,8 +92,8 @@ if(!isset($_SESSION['userSession'])){
                           foreach ($trans as $row) {
                             $code = Database::getInstance()->get_name_from_id("code","courses","courseID",$row['courseID']);
                             $title = Database::getInstance()->get_name_from_id("title","courses","courseID",$row['courseID']);
-                            $semester = Database::getInstance()->get_name_from_id("semester","courses","courseID",$row['courseID']);
-                            $level = Database::getInstance()->get_name_from_id("level","courses","courseID",$row['courseID']);
+                            $semester = $row['semester'];
+                            $level = $row['level'];
                             $ctype = Database::getInstance()->get_name_from_id("courseType","courses","courseID",$row['courseID']);
                             $score = $row['score'];
 
@@ -118,7 +145,18 @@ if(!isset($_SESSION['userSession'])){
   </div>
 <?php include_once("inc/footer.php"); ?>
 <script type="text/javascript">
-	var s=jQuery .noConflict();
+  var s=jQuery .noConflict();
+  function congrats(){ 
+
+    s.notify({
+        icon: 'pe-7s-trash',
+        message: "Score Was Sent Successfully"
+
+      },{
+          type: 'success',
+          timer: 100000
+      });
+    }
 		
 		function pushToOfficer(){ 
 		var val = "<?php echo $matNumber; ?>";
@@ -130,7 +168,8 @@ if(!isset($_SESSION['userSession'])){
             {
 				if (data === 'Done') {
 					console.log(data);
-            window.location = 'transcript.php';
+           // window.location = 'transcript.php';
+           congrats();
 				  }
 				  else {
 					   

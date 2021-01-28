@@ -25,7 +25,7 @@ include_once("inc/header.php"); ?>
 
                       <div class="form-group">
                         <label>Password</label>
-                        <input type="text" class="form-control" id="pass" required autocomplete="off" placeholder="password" name="password">
+                        <input type="password" class="form-control" id="pass" required autocomplete="off" placeholder="password" name="password">
                       </div>
                       <input type="submit" class="btn btn-fill btn-primary" value="Login"/>
                     </div>

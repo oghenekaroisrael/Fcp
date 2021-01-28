@@ -10,6 +10,7 @@ if(!isset($_SESSION['userSession'])){
   exit;
 }elseif (isset($_SESSION['userSession'])){
   $matNumber = $_SESSION['userSession'];
+  Database::getInstance()->determineBulletin($matNumber);
 }
 ?>
 <body class="">
@@ -33,6 +34,13 @@ if(!isset($_SESSION['userSession'])){
                               $mname = $row['middleName'];
                               $dept = $row['department_id'];
                               $lvl = $row['level'];
+                              $bulletin = $row['bulletin'];
+                            endforeach; 
+                            
+                            $bull = Database::getInstance()->select_from_where2('bulletin', 'bulletinID', $bulletin);
+														foreach($bull as $row):
+                              $syear = $row['startingYear'];	
+                              $eyear =  $row['endingYear'];
 														endforeach; 
                     ?>
                     <div class="typography-line">
@@ -48,7 +56,7 @@ if(!isset($_SESSION['userSession'])){
                       <h4><span>Department: </span> <?php echo Database::getInstance()->get_name_from_id("name","departments","department_id",$dept);?> </h4>
                     </div>
                     <div class="typography-line">
-                      <h4><span>Bulletin Used: </span> 2018- 2022 </h4>
+                      <h4><span>Bulletin Used: </span> <?php echo $syear." - ".$eyear; ?> </h4>
                     </div>
                   </div>
                 </div>

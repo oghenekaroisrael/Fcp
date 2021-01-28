@@ -66,41 +66,18 @@ error_reporting(1);
 		} catch(PDOException $e){
 			echo 'Error: ' . $e->getMessage();
 		}	
-	}
-	
-	//sum from daily expenses
-	public function sum_where($table, $col, $col2,$val1, $col3, $val2){
-		$stmt = $this->db->prepare("SELECT SUM($col) AS totalAmt FROM $table WHERE $col2 = ? AND $col3 = ? LIMIT 10");
-		$stmt->execute([$val1, $val2]);
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		return $row['totalAmt'];
-		$stmt = null;
-	}
-
-	//sum from daily expenses
-	public function sum_where2($table, $col, $col2,$val1, $col3, $val2){
-		$stmt = $this->db->prepare("SELECT SUM($col) AS totalAmt FROM $table WHERE $col2 = ? AND $col3 = ? LIMIT 1");
-		$stmt->execute([$val1, $val2]);
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		return $row['totalAmt'];
-		$stmt = null;
-	}
-
-    public function sum_where4($col,$table,$col2,$val1,$col3,$val2,$col4,$val3,$col5,$val4){
-		$stmt = $this->db->prepare("SELECT SUM($col) AS totalAmt FROM $table WHERE $col2 = ? AND $col3 = ? AND $col4 = ? AND $col5 = ? LIMIT 1");
-		$stmt->execute([$val1, $val2,$val3,$val4]);
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		return $row['totalAmt'];
-		$stmt = null;
     }
     
-	//For admin
-	public function sum_admin($col, $table, $trans, $val){
-		$stmt = $this->db->prepare("SELECT SUM($col) AS totalAmt FROM $table WHERE admin_status = ? AND trans_type = ?");
-		$stmt->execute([$trans, $val]);
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		return $row['totalAmt'];
-		$stmt = null;
+    public function get_name_from_id_2($tab,$col,$whe,$id,$whe2,$id2){
+		try{
+			$que= $this->db->prepare("SELECT $tab FROM $col WHERE $whe = ? AND $whe2 = ?");
+			$que->execute([$id,$id2]);
+			$SingleVar = $que->fetchColumn();
+			return $SingleVar;
+			$que = null;			
+		} catch(PDOException $e){
+			echo 'Error: ' . $e->getMessage();
+		}	
 	}
 	
 	//delete
@@ -115,29 +92,6 @@ error_reporting(1);
 		}
 	}
 		
-	//delete from users
-	public function delete_from_where_user($del){
-		try {
-			$stmt = $this->db->prepare("DELETE FROM users WHERE email = ?");
-			$stmt->execute([$del]);
-			$stmt = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-	
-	//delete from users
-	public function delete_from_where_gen($del, $table, $col){
-		try {
-			$stmt = $this->db->prepare("DELETE FROM $table WHERE $col = ?");
-			$stmt->execute([$del]);
-			$stmt = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
 	
 	//delete
 	public function delete_things($tab,$col,$value) {
@@ -184,65 +138,12 @@ error_reporting(1);
 			
 		}	
 	}
-
-	public function select_from_cur_date(){
-		try {
-			$que= $this->db->prepare("SELECT * FROM doctor_schedule WHERE CURDATE() = day_date");
-			$que->execute([]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
 	
 	//select order
 	public function select_from_where_no($table,$col,$valEmp){
 		try {
 			$que= $this->db->prepare("SELECT * FROM $table WHERE $col != ?");
 			$que->execute([$valEmp]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-
-
-	
-	public function select_last_person2(){
-		try {
-			$que= $this->db->prepare("SELECT * FROM `patient_appointment` WHERE got = 0 ORDER BY got DESC LIMIT 0, 1");
-			$que->execute();
-			$row = $que->fetch(PDO::FETCH_OBJ);
-			$id = $row->patient_id;
-			$que = null;
-			
-			$que= $this->db->prepare("SELECT title,surname,middle_name,first_name FROM `patients` WHERE id = ?");
-			$que->execute([$id]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-
-	public function select_last_person(){
-		try {
-			$que= $this->db->prepare("SELECT * FROM `patient_appointment` WHERE got = 0 ORDER BY got DESC LIMIT 1, 1");
-			$que->execute();
-			$row = $que->fetch(PDO::FETCH_OBJ);
-			$id = $row->patient_id;
-			$que = null;
-			
-			$que= $this->db->prepare("SELECT title,surname,middle_name,first_name FROM `patients` WHERE id = ?");
-			$que->execute([$id]);
 			$arr = $que->fetchAll();
 			return $arr;
 			$que = null;
@@ -266,6 +167,15 @@ error_reporting(1);
 		}
 	}
 
+	//sum from table with 4 parameters
+	public function sum_where4( $col,$table, $col2,$val1, $col3, $val2,$col4,$val3,$col5,$val4){
+		$stmt = $this->db->prepare("SELECT SUM($col) AS totalAmt FROM $table WHERE $col2 = ? AND $col3 = ? AND $col4 = ? AND $col5 = ? LIMIT 1");
+		$stmt->execute([$val1, $val2,$val3,$val4]);
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $row['totalAmt'];
+		$stmt = null;
+	}
+
 	public function select_transcript($value){
 		try {
 			$que = $this->db->prepare("SELECT status FROM transcript WHERE matNo = ? GROUP BY matNo LIMIT 1");
@@ -278,21 +188,15 @@ error_reporting(1);
 			echo 'Error: ' . $e->getMessage();
 		}
 	}
-	
-	//Select url
-	public function select_url($col){
-		try {
-			$que = $this->db->prepare("SELECT $col FROM site_url");
-			$que->execute();
-			$count = $que->fetch(PDO::FETCH_COLUMN);
-			return $count;
-			$que = null;		
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();
-		}
+	//count notifications
+	public function count_notifications($status,$user){
+		$stmt = $this->db->prepare("SELECT * FROM notifications WHERE status = ? AND toID = ? ");
+		$stmt->execute([$status,$user]);
+		$count = $stmt->rowCount();
+		return $count;
+		$stmt = null;
 	}
-	
+
 	public function select_count($col, $table){
 		$stmt = $this->db->prepare("SELECT COUNT($col) FROM $table");
 		$stmt->execute([]);
@@ -333,27 +237,7 @@ error_reporting(1);
 		$stmt = null;
 	}
 	
-	public function count_where_userid($user_id){
-		$transaction = 1;
-		$stmt = $this->db->prepare("SELECT COUNT(*) FROM referrals WHERE user_id = ? AND transaction = ? ");
-		$stmt->execute([$user_id, $transaction]);
-		$count = $stmt->fetch(PDO::FETCH_COLUMN);
-		return $count;
-		$stmt = null;
-	}
 	
-	public function select_trans_limit($table){
-		try {
-			$que= $this->db->prepare("SELECT * FROM $table"); //using LIMIt fro optimization purpose
-			$que->execute();
-			return $que;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();
-			
-		}
-	}
 	
 	public function select_from_where_limit_user($table,$col,$user_id){
 		try {
@@ -409,8 +293,21 @@ error_reporting(1);
 
 	public function show_notification($staff_id, $status){
 		try {
-			$que= $this->db->prepare("SELECT * FROM notifications WHERE staff_id = $staff_id AND status = $status");
+			$que= $this->db->prepare("SELECT * FROM notifications WHERE toID = $staff_id AND status = $status");
 			$que->execute();
+			$arr = $que->fetchAll();
+			return $arr;
+			$que = null;
+		} catch (PDOException $e) {
+			// For handling error
+			echo 'Error: ' . $e->getMessage();			
+		}
+	}
+
+	public function show_notification_all($staff_id){
+		try {
+			$que= $this->db->prepare("SELECT * FROM notifications WHERE toID = ? ORDER BY status,date_added ASC LIMIT 0,5");
+			$que->execute([$staff_id]);
 			$arr = $que->fetchAll();
 			return $arr;
 			$que = null;
@@ -441,33 +338,8 @@ error_reporting(1);
 		return $count;
 		$stmt = null;
 	}
-	
-	public function count_textmsgs_sent($user_id){
-		$flag = 1;
-		$stmt = $this->db->prepare("SELECT COUNT(*) FROM extra_inv_details WHERE user_id = ? AND text_msg_sent = ? AND MONTH(date_added) = MONTH(CURRENT_DATE) AND YEAR(date_added) = YEAR(CURRENT_DATE)");
-		$stmt->execute([$user_id, $flag]);
-		$count = $stmt->fetch(PDO::FETCH_COLUMN);
-		return $count;
-		$stmt = null;
-	}
-	
-	public function count_admin($table){
-		$stmt = $this->db->prepare("SELECT COUNT(*) FROM $table ");
-		$stmt->execute();
-		$count = $stmt->fetch(PDO::FETCH_COLUMN);
-		return $count;
-		$stmt = null;
-	}
-	
 
-	public function count_where_admin($table,$col, $id, $col2, $id2){
-		$stmt = $this->db->prepare("SELECT COUNT(*) FROM $table WHERE $col = ? AND $col2 = ?");
-		$stmt->execute([$id, $id2]);
-		$count = $stmt->fetch(PDO::FETCH_COLUMN);
-		return $count;
-		$stmt = null;
-	}
-	
+
 	public function count_from($table,$col, $id){
 		$stmt = $this->db->prepare("SELECT COUNT(*) FROM $table WHERE $col = ?");
 		$stmt->execute([$id]);
@@ -499,82 +371,8 @@ error_reporting(1);
 		$arr = $stmt->fetchAll();
 		return $arr;
 		$stmt = null;	
-	}//end class
-	
-	//This method is for general select account
-	public function select_gen_monthly(){
-		$stmt = $this->db->prepare("SELECT * FROM accounts WHERE MONTH(date_paid) = ".date('m')."");
-		$stmt->execute();
-		$arr = $stmt->fetchAll();
-		return $arr;
-		$stmt = null;	
-	}//end class
-
-	//This method is for general select account
-	public function select_deferred(){
-		$stmt = $this->db->prepare("SELECT * FROM accounts WHERE payment_status = 4");
-		$stmt->execute();
-		$arr = $stmt->fetchAll();
-		return $arr;
-		$stmt = null;	
-	}//end class
-
-	//This method is for general select account
-	public function select_waved(){
-		$stmt = $this->db->prepare("SELECT * FROM accounts WHERE payment_status = 5");
-		$stmt->execute();
-		$arr = $stmt->fetchAll();
-		return $arr;
-		$stmt = null;	
-	}//end class
-
-	//This method is for general select account
-	public function select_comp(){
-		$stmt = $this->db->prepare("SELECT * FROM accounts a LEFT JOIN companies b ON a.company_id = b.id  WHERE a.payment_status = 3 ORDER BY a.id DESC");
-		$stmt->execute();
-		$arr = $stmt->fetchAll();
-		return $arr;
-		$stmt = null;	
-	}//end class
-
-
-	//This method is for general select account
-	public function select_comp_id($val){
-		$stmt = $this->db->prepare("SELECT * FROM company_bill WHERE company_id = ?  ORDER BY id DESC");
-		$stmt->execute($val);
-		$arr = $stmt->fetchAll();
-		return $arr;
-		$stmt = null;	
-	}//end class
-
-	//This method is for general select account
-	public function select_companies(){
-		$stmt = $this->db->prepare("SELECT * FROM companies  ORDER BY id DESC");
-		$stmt->execute();
-		$arr = $stmt->fetchAll();
-		return $arr;
-		$stmt = null;	
-	}//end class
-
-
-	//This method is for general select credit
-	public function select_gen_credit(){
-		$stmt = $this->db->prepare("SELECT * FROM accounts WHERE MONTH(date_paid) = ".date('m')." AND payment_status = 1");
-		$stmt->execute();
-		$arr = $stmt->fetchAll();
-		return $arr;
-		$stmt = null;	
-	}//end class
-
-	//This method is for general select debit
-	public function select_gen_debit(){
-		$stmt = $this->db->prepare("SELECT * FROM accounts WHERE MONTH(date_paid) = ".date('m')." AND payment_status != 1 ");
-		$stmt->execute();
-		$arr = $stmt->fetchAll();
-		return $arr;
-		$stmt = null;	
-	}//end class
-
+    }//end class
+    
 	//I am using this function with 2 cos I chnaged $id to $user_id
 	public function select_from_where2($table,$col,$user_id){
 		try {
@@ -590,19 +388,7 @@ error_reporting(1);
 	}
 
 	
-	//I am using this function with 2 cos I chnaged $id to $user_id
-	public function select_from_where2_pres($table,$col,$user_id){
-		try {
-			$que= $this->db->prepare("SELECT * FROM $table WHERE $col= ? ORDER BY prescription_id DESC");
-			$que->execute([$user_id]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
+
 
 	//I am using this function with 2 cos I chnaged $id to $user_id
 	public function select_from_where2_DESC($table,$col,$user_id){
@@ -618,171 +404,9 @@ error_reporting(1);
 		}
 	}
 
-	//I am using this function with 3 cos I chnaged $id to $user_id and this displays just the appointment for each doctor
-	public function select_from_where2_DESC3($table,$doc){
-		try {
-			$que= $this->db->prepare("SELECT * FROM $table WHERE treated= 0 AND doctor_id = $doc ORDER BY id DESC");
-			$que->execute([$doc]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
 
-
-	//I am using this function with 3 cos I chnaged $id to $user_id and this displays just the appointment for each doctor
-	public function select_from_where2_DESC5($table,$col,$doc,$col2,$doc2,$col3,$doc3){
-		try {
-			$que= $this->db->prepare("SELECT * FROM $table WHERE  $col2 = $doc2 AND $col LIKE '".$doc."' AND $col3 = $doc3 ORDER BY id DESC");
-			$que->execute([$doc2,$doc,$doc3]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-
-		public function select_from_where2_DESC4($table,$col,$doc,$col2,$doc2,$col3,$doc3){
-		try {
-			$que= $this->db->prepare("SELECT * FROM $table WHERE  $col2 = $doc2 AND $col = '$doc' AND $col3 = $doc3 ORDER BY id DESC");
-			$que->execute([$doc2,$doc,$doc3]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-
-
-	public function select_from_credit($table,$col,$user_id){
-		try {
-			$que= $this->db->prepare("SELECT * FROM $table WHERE $col != ? OR  $col != 3 OR   $col != 4");
-			$que->execute([$user_id]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-
-	public function select_from_debit($table,$col,$user_id){
-		try {
-			$que= $this->db->prepare("SELECT * FROM $table WHERE $col = ? OR $col = 3 OR $col = 4");
-			$que->execute([$user_id]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-
-	public function select_distinct_test_name(){
-		try {
-			$que= $this->db->prepare("SELECT GROUP_CONCAT(test_name),COUNT(test_name) c FROM patient_test_result GROUP by test_name HAVING  c > 1");
-			$que->execute();
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-
-		public function select_distinct_test_name2(){
-		try {
-			$que= $this->db->prepare("SELECT DISTINCT test_name FROM patient_test_result");
-			$que->execute();
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
 	
-	public function select_distinct_doc($ref){
-		try {
-			$que= $this->db->prepare("SELECT DISTINCT staff_id FROM xray_requests WHERE link = '$ref'");
-			$que->execute([$ref]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
 
-	public function select_from_where2_some_val($value){
-		try {
-			$que= $this->db->prepare("SELECT * FROM patient_test_result WHERE ref_id= ? AND value != ''");
-			$que->execute([$value]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-	
-	public function select_for_docy($user_id){
-		try {
-			$val = 0;
-			$que= $this->db->prepare("SELECT * FROM patient_appointment WHERE treated = ? AND doctor_id = ?");
-			$que->execute([$val, $user_id]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-	
-	
-	public function select_pass($val){
-		try {
-			$que= $this->db->prepare("SELECT password FROM staff WHERE user_id = ?");
-			$que->execute([$val]);
-			$row = $que->fetch(PDO::FETCH_OBJ);
-			$pass = $row->password;
-			return $pass;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-
-	public function select_from_lab(){
-		try {
-			$awat =1;
-			$seen =0;
-			$que= $this->db->prepare("SELECT * FROM patient_test_group WHERE awaiting_result =? and seen_result =? ");
-			$que->execute([$awat,$seen]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-	
 	//I am using this function with 2 cos I chnaged $id to $user_id
 	public function select_from_where3($table,$col,$user_id){
 		try {
@@ -796,33 +420,7 @@ error_reporting(1);
 			echo 'Error: ' . $e->getMessage();			
 		}
 	}
-	
 
-	public function select_from_where31($table,$col,$user_id){
-		try {
-			$que= $this->db->prepare("SELECT * FROM $table WHERE $col= ? ORDER BY patient_test_id DESC");
-			$que->execute([$user_id]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
-
-	public function select_title($table,$col,$title){
-		try {
-			$que= $this->db->prepare("SELECT * FROM $table WHERE $col= ?");
-			$que->execute([$title]);
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();			
-		}
-	}
 		
 	//select order
 	public function select_order($table,$col,$inv_num){
@@ -853,33 +451,6 @@ error_reporting(1);
 		}
 	}
 	
-	public function select_from_ord2($table,$ord){
-		try {
-			$que = $this->db->prepare("SELECT * FROM $table ORDER BY id $ord");
-			$que->execute();
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;		
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();
-			
-		}
-	}
-	
-	public function select_from_ord3($table,$doc,$id,$ord){
-		try {
-			$que = $this->db->prepare("SELECT * FROM $table WHERE doctor_id = $doc ORDER BY $id $ord");
-			$que->execute();
-			$arr = $que->fetchAll();
-			return $arr;
-			$que = null;		
-		} catch (PDOException $e) {
-			// For handling error
-			echo 'Error: ' . $e->getMessage();
-			
-		}
-	}
 	public function select_from_where_ord($tab,$col,$whe,$tab_id,$ord){
 		try {
 			
@@ -991,8 +562,125 @@ error_reporting(1);
 			// For handling error
 			echo 'Error: ' . $e->getMessage();			
 		}
+    }
+    public function getCredit($score)
+    {
+        try {
+            if ($score >= 80 && $score <= 100) {
+                $credit = 5; 
+            }else if ($score >= 60 && $score <= 79) {
+                $credit = 4; 
+            }else if ($score >= 50 && $score <= 69) {
+                $credit = 3; 
+            }else if ($score >= 45 && $score <= 49) {
+                $credit = 2; 
+            }else if ($score >= 40 && $score <= 44) {
+                $credit = 1; 
+            }else if ($score >= 0 && $score <= 39) {
+                $credit = 0;
+            }
+            return $credit;
+		} catch (Exception $e) {
+			// For handling error
+			echo 'Error: ' . $e->getMessage();			
+		}
+    }
+    public function calcGPA($matNumber,$level,$semester)
+    {
+        try {
+			$que= $this->db->prepare("SELECT a.score as score,a.courseID as courseID,b.unit as unit 
+            FROM transcript a 
+            RIGHT JOIN courses b ON a.courseID = b.courseID 
+            WHERE a.matNo = ? AND b.level = ? 
+            AND b.semester = ?");
+			$que->execute([$matNumber,$level,$semester]);
+			$arr = $que->fetchAll(PDO::FETCH_ASSOC);
+			$count = $que->rowCount();
+            $CaU = 0;
+            $tu = 0;
+            foreach ($arr as $row) {
+                $credit = $this->getCredit($row['score']);
+                $CaU += ($credit * $row['unit']);
+                $tu += $row['unit'];
+            }
+            if($count > 0){
+				return round(($CaU/$tu),2);
+			}else{
+				return '0.0';
+			}
+		} catch (PDOException $e) {
+			// For handling error
+			echo 'Error: ' . $e->getMessage();			
+		}
 	}
 	
+	public function getSuggestion($matNumb,$courseID)
+	{
+		try {
+			$dept = $this->get_name_from_id("department_id","students","matNo",$matNumb);
+			$courseDur = $this->get_name_from_id("duration","departments","department_id",$dept)*100;
+			$failed = [];
+			$unitsPerSemester = [];
+			$passedUnitsPerSemester = 0;			
+			$failedUnitsPerSemester = 0;
+			for ($i=100; $i <= $courseDur; $i+=100) { 
+				for ($sem=1; $sem <= 2; $sem++) { 
+					$que= $this->db->prepare("SELECT a.courseID,a.unit,a.courseType,b.score FROM `courses` a 
+					RIGHT JOIN transcript b ON a.courseID = b.courseID
+					WHERE a.level = ? AND a.semester = ? AND b.matNO = ?");
+					$que->execute([$i,$sem,$matNumb]);
+					$arr = $que->fetchAll(PDO::FETCH_ASSOC);
+					$tu = 0;
+					foreach ($arr as $row) {
+						$tu += $row['unit'];
+						$score = $row['score'];
+						$credit = $this->getCredit($score);
+						if ($row['courseType'] == 1) {
+							if ($score >= 0  && $score <= 39) {
+								$newCour = array($row['courseType'] => $score);
+								array_push($failed,$newCour);
+								$failedUnitsPerSemester += $row['unit'];
+							}else{
+								$passedUnitsPerSemester += $row['unit'];
+							}
+						}else if ($row['courseType'] > 1) {
+							if ($score >= 0  && $score <= 49) {
+								$newCour = array($row['courseType'] => $score);
+								array_push($failed,$newCour);
+								$failedUnitsPerSemester += $row['unit'];
+							}else{
+								$passedUnitsPerSemester += $row['unit'];
+							}
+						}
+					}
+					$ups = array($i,$sem,$tu,$passedUnitsPerSemester,$failedUnitsPerSemester);
+					array_push($unitsPerSemester,$ups);
+					$failedUnitsPerSemester = 0;
+					$passedUnitsPerSemester = 0;
+					$tu = 0;
+					$this->analyzeData($unitsPerSemester);
+				}
+			}
+			return $this->analyzeData($unitsPerSemester);
+
+		} catch (Exception $e) {
+			// For handling error
+			echo 'Error: ' . $e->getMessage();
+		}
+	}
+	public function analyzeData($arr)
+	{
+		try {
+			for ($i=0; $i < count($arr); $i++) { 
+				$next = $i++;
+				$failed = $arr[4];
+				$passed = $arr[3];
+			}
+		} catch (Exception $e) {
+			// For handling error
+			echo 'Error: ' . $e->getMessage();
+		}
+	}
 	public function select_for_cart($table,$col,$value){
 		try {
 			$que= $this->db->prepare("SELECT * FROM $table WHERE $col= ?");
@@ -1339,7 +1027,16 @@ error_reporting(1);
             $status = 1;
             $stmt = $this->db->prepare("UPDATE transcript SET status = ? WHERE matNo = ?");
             $stmt->execute([$status,$matNumber]);
-            $stmt = null;
+			$stmt = null;
+			
+			// send notification
+			$did = $this->get_name_from_id("department_id","students","matNo",$matNumber);
+			$msg = "Your Result Was Accepted";
+			$link = "transcript.php";
+			$fromID = $this->get_name_from_id("uid","users","department_id",$did);
+			$stmt = $this->db->prepare("INSERT INTO notifications(message,link,fromID,toID,date_added) VALUES(?,?,?,?,NOW())");
+			$stmt->execute([$msg,$link,$fromID,$matNumber]);
+			$stmt = null;
 
             return "Done";
             
@@ -1399,7 +1096,7 @@ error_reporting(1);
                 echo 'Error: ' . $e->getMessage();			
             }
     }
-    public function updateTranscript($id, $score,$matNumb)
+    public function updateTranscript($id, $score,$matNumb,$level,$semester)
     {
         try {
             $status = 0;
@@ -1409,19 +1106,18 @@ error_reporting(1);
                 $count = $que->rowCount();
                 if ($count == 0) {
                     if (!empty($score[$i])) {
-                        $stmt = $this->db->prepare("INSERT INTO transcripttemp(`courseID`,`score`,`matNO`,`status`) 
-                    VALUES (?,?,?,?)");
-                    $stmt->execute([$id[$i],$score[$i],$matNumb,$status]);
+                        $stmt = $this->db->prepare("INSERT INTO transcripttemp(`courseID`,`score`,`matNO`,`status`,`level`,`semester`) 
+                    VALUES (?,?,?,?,?,?)");
+                    $stmt->execute([$id[$i],$score[$i],$matNumb,$status,$level,$semester]);
                     $stmt = null;
                     }
                 }else{
                     if (!empty($score[$i])) {
-                        $stmt = $this->db->prepare("UPDATE transcripttemp SET `courseID` = ?,`score` = ?,`matNO` = ?,`status` = ? WHERE `courseID` = ? AND `matNo` = ?");
-                        $stmt->execute([$id[$i],$score[$i],$matNumb,$status,$id[$i],$matNumb]);
+                        $stmt = $this->db->prepare("UPDATE transcripttemp SET `courseID` = ?,`score` = ?,`matNO` = ?,`status` = ?,`level`=?,`semester` = ? WHERE `courseID` = ? AND `matNo` = ?");
+                        $stmt->execute([$id[$i],$score[$i],$matNumb,$status,$level,$semester,$id[$i],$matNumb]);
                         $stmt = null;
                     }
                 }
-
             }
             return "Done";
             } catch (PDOException $e) {
@@ -1434,46 +1130,78 @@ error_reporting(1);
     {
         try {
             //solve
-            $status = 1;
-                $que=$this->db->prepare("SELECT a.TransID as id FROM `transcripttemp` a 
-                WHERE a.matNo = ? 
-                AND NOT EXISTS(SELECT courseID FROM `transcript` b WHERE a.TransID = b.TransID) 
+                $que=$this->db->prepare("SELECT a.TransID as id,a.score as score FROM `transcripttemp` a 
+                WHERE a.matNo = ?
+                AND NOT EXISTS(SELECT courseID FROM `transcript` b WHERE a.courseID = b.courseID) 
                 ORDER BY a.TransID ASC");
                 $que->execute([$matNumb]);
-                $row=$que->fetch();
-                    $stmt = $this->db->prepare("INSERT INTO transcript (courseID, score, matNO)
-                    SELECT courseID, score, matNO FROM transcripttemp
-                    WHERE matNO= ?;");
-                    $stmt->execute([$matNumb]);
-                    $stmt = null;
+                $counta = $que->rowCount();
+                $rowa=$que->fetchAll();
+                $que = null;
+                
+                $que=$this->db->prepare("SELECT a.TransID as id,
+                    b.TransID as id_trans, a.score as score FROM `transcripttemp` a 
+                    RIGHT JOIN `transcript` b ON a.courseID = b.courseID
+                                        WHERE a.matNo = ? 
+                                        AND a.score <> b.score
+                                        AND EXISTS(SELECT courseID FROM `transcript` b WHERE a.TransID = b.TransID) 
+                                        ORDER BY a.TransID ASC");
+                $que->execute([$matNumb]);
+                $countb = $que->rowCount();
+                $rowb=$que->fetchAll();
 
-                    $stmt = $this->db->prepare("UPDATE transcripttemp SET `status`=1 WHERE matNO= ?;");
-                    $stmt->execute([$matNumb]);
-                    $stmt = null;
-                    
-                //incase
-                    // $stmt = $this->db->prepare("UPDATE transcript
-                    // SET transcript.score = 
-                    // ( 
-                    // SELECT transcripttemp.score FROM transcripttemp
-                    // WHERE transcripttemp.courseID = transcript.courseID AND transcripttemp.matNO = ? LIMIT 1
-                    // )");
-                    // $stmt->execute([$matNumb]);
-                    // $stmt = null;
+                if ($counta > 0) {
+                    foreach ($rowa as $data) {
+                        $stmt = $this->db->prepare("INSERT INTO transcript (courseID, score, matNO,level,semester)
+                        SELECT courseID, score, matNO,level,semester FROM transcripttemp
+                        WHERE TransID= ?;");
+                        $stmt->execute([$data['id']]);
+                        $stmt = null;  
+                        $stmt = $this->db->prepare("UPDATE transcripttemp SET `status`=1 WHERE TransID= ?;");
+                        $stmt->execute([$data['id']]);
+                        $stmt = null;
+                    }
+                }
 
-                    // $stmt = $this->db->prepare("UPDATE transcripttemp SET `status`=1 WHERE matNO= ?;");
-                    // $stmt->execute([$matNumb]);
-                    // $stmt = null;
-            return "Done";
+                    if ($countb > 0) {
+                        foreach ($rowb as $val) {
+                                $stmt = $this->db->prepare("UPDATE transcript
+                                SET score = ? WHERE TransID = ?
+                                ");
+                                $stmt->execute([$val['score'],$val['id_trans']]);
+                                $stmt = null;
+
+                                $stmt = $this->db->prepare("UPDATE transcripttemp SET `status`=1 WHERE TransID= ?;");
+                                $stmt->execute([$val['id']]);
+                                $stmt = null;
+                        }
+					}
+				// get fullname of student
+					$que=$this->db->prepare("SELECT firstName,lastName,middleName,department_id FROM students WHERE matNo = ? LIMIT 1");
+					$que->execute([$matNumb]);
+					$row=$que->fetchAll();
+					$que = null;
+					foreach ($row as $value) {
+						$fullname = $value['lastName']." ".$value['firstName']." ".$value['middleName'];
+						$did = $value['department_id'];
+					}
+				$msg = $fullname." just sent His Scores";
+				$link = "transcript.php?id=".$matNumb;
+				$toID = $this->get_name_from_id("uid","users","department_id",$did);
+				$stmt = $this->db->prepare("INSERT INTO notifications(message,link,fromID,toID,date_added) VALUES(?,?,?,?,NOW())");
+				$stmt->execute([$msg,$link,$matNumb,$toID]);
+				$stmt = null;
+                return "Done";
             } catch (PDOException $e) {
                 // For handling error
                 echo 'Error: ' . $e->getMessage();			
             }
-    }
+	}
+	
 	//count in-patient_bill
-	public function count_bill($aid){
+	public function notifi($user){
 		try {
-			$que= $this->db->prepare("SELECT * FROM `in-patients` WHERE app_id = ?");
+			$que= $this->db->prepare("SELECT * FROM `notifications` WHERE toID = ?");
 			$que->execute([$aid]);
 			$arr = $que->rowCount();
 			return $arr;
@@ -1510,6 +1238,31 @@ error_reporting(1);
 		}
 	}
 
+	//determinf Students Bull
+	public function determineBulletin($matNumb)
+	{
+		try {
+			$session = intval(substr($matNumb,0,2));
+			$stmt= $this->db->prepare("SELECT `startingYear`, `endingYear`,`bulletinID` FROM bulletin");
+			$stmt->execute();
+			$arr = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			foreach ($arr as $value) {
+				$i = substr($value['startingYear'],2,2);
+				$j = substr($value['endingYear'],2,2);
+				if (in_array($session,range($i,$j))) {
+					$r = $value['bulletinID'];
+					break;
+				}
+			}	
+			$stmt = null;
+			$stmt= $this->db->prepare("UPDATE `students` SET `bulletin` = ? WHERE `matNo` = ?");
+			$stmt->execute([$r,$matNumb]);
+			$stmt = null;
+		} catch (Exception $e) {
+			//For handling error
+			echo 'Error: '. $e->getMessage();
+		}
+	}
 	//user login
 	public function check_pass($username,$password){	
 		if(Empty($username)){
@@ -1613,7 +1366,7 @@ error_reporting(1);
 
 	//update db fro when a user logs
 	public function notify_viewed($id){
-		$stmt = $this->db->prepare("UPDATE notifications SET status = 1 WHERE id = ?")->execute([$id]);
+		$stmt = $this->db->prepare("UPDATE notifications SET status = 1 WHERE notificationID = ?")->execute([$id]);
 	}
 
 	//update db fro when a user logs output_add_rewrite_var
@@ -3763,8 +3516,8 @@ error_reporting(1);
     public function select_outstanding1($matNumber){
 		try {
 			$que= $this->db->prepare("SELECT
-            b.courseID,b.score as score FROM students a 
-            LEFT JOIN transcript b ON a.matNo = b.matNo                     
+            b.courseID,b.score as score,b.level,b.semester FROM students a 
+            LEFT JOIN transcripttemp b ON a.matNo = b.matNo                     
             LEFT JOIN courses c ON b.courseID = c.courseID           
             WHERE (b.score >= 0 AND b.score <= 39 AND c.courseType = 1)   
             OR (b.score >= 0 AND b.score <= 49 AND c.courseType > 1)  

@@ -48,9 +48,6 @@ if(!isset($_SESSION['userSession'])){
                         <th class="text-center">
                             Remark
                         </th>
-                        <th class="text-center">
-                            Suggestion
-                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -59,8 +56,8 @@ if(!isset($_SESSION['userSession'])){
                           foreach ($trans as $row) {
                             $code = Database::getInstance()->get_name_from_id("code","courses","courseID",$row['courseID']);
                             $title = Database::getInstance()->get_name_from_id("title","courses","courseID",$row['courseID']);
-                            $semester = Database::getInstance()->get_name_from_id("semester","courses","courseID",$row['courseID']);
-                            $level = Database::getInstance()->get_name_from_id("level","courses","courseID",$row['courseID']);
+                            $semester = $row['semester'];
+                            $level = $row['level'];
                             $ctype = Database::getInstance()->get_name_from_id("courseType","courses","courseID",$row['courseID']);
                             $score = $row['score'];
 
@@ -94,9 +91,6 @@ if(!isset($_SESSION['userSession'])){
                                 }
                                 ?>
                                 </td>
-                              <td class="text-center">
-                                  Add To 1st Semester 400 Level Courses
-                              </td>
                               </tr>
                             <?php
                           }  

@@ -9,9 +9,9 @@ if(!isset($_SESSION['userSession'])){
   header("Location: ../index");
   exit;
 }elseif (isset($_SESSION['userSession'])){
-  $user_id = $_SESSION['userSession'];
+  $uid = $_SESSION['userSession'];
   $bid = $_GET['bid'];
-  $deptID = Database::getInstance()->get_name_from_id("department_id","users","uid",$user_id);
+  $deptID = Database::getInstance()->get_name_from_id("department_id","users","uid",$uid);
   $dpt = ucwords(Database::getInstance()->get_name_from_id("name","departments","department_id",$deptID));
 
 }

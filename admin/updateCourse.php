@@ -9,10 +9,10 @@ if(!isset($_SESSION['userSession'])){
   header("Location: ../index");
   exit;
 }elseif (isset($_SESSION['userSession'])){
-  $user_id = $_SESSION['userSession'];
+  $uid = $_SESSION['userSession'];
   $bid = $_GET['bid'];
   $courseID=$_GET['id'];
-  $deptID = Database::getInstance()->get_name_from_id("department_id","users","uid",$user_id);
+  $deptID = Database::getInstance()->get_name_from_id("department_id","users","uid",$uid);
   $dpt = ucwords(Database::getInstance()->get_name_from_id("name","departments","department_id",$deptID));
   $courseData = Database::getInstance()->select_from_where('courses',"courseID",$courseID);
   foreach($courseData as $ow):

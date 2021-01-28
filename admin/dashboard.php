@@ -1,5 +1,18 @@
-<?php include_once("inc/header.php"); 
+<?php 
+include_once("inc/header.php");
+ob_start();
+session_start(); 
 $active_page = "dashboard";
+// Include database class
+include_once '../inc/db.php';
+if(!isset($_SESSION['userSession'])){
+  header("Location: ../index");
+  exit;
+}elseif (isset($_SESSION['userSession'])){
+  $uid = $_SESSION['userSession'];
+  $dept= Database::getInstance()->get_name_from_id("department_id","users","uid",$uid);
+  $dpt = ucwords(Database::getInstance()->get_name_from_id("name","departments","department_id",$dept));
+}
 ?>
 <body class="">
 <div class="wrapper">

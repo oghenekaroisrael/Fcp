@@ -9,7 +9,7 @@ if(!isset($_SESSION['userSession'])){
   header("Location: ../index");
   exit;
 }elseif (isset($_SESSION['userSession'])){
-  $user_id = $_SESSION['userSession'];
+  $uid = $_SESSION['userSession'];
   $bid = $_GET['bid'];
   $bulletinData = Database::getInstance()->select_from_where('bulletin',"bulletinID",$bid);
     foreach($bulletinData as $ow):
@@ -139,7 +139,7 @@ option{
         e.preventDefault();
 		var formData = new FormData(a(this)[0]);
     var ins = "updateBulletin";
-    var user = "<?php echo $user_id; ?>";
+    var user = "<?php echo $uid; ?>";
     var id = "<?php echo $bid; ?>";
     formData.append('user',user);
     formData.append('id',id);

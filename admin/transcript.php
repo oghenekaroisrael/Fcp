@@ -9,7 +9,7 @@ if(!isset($_SESSION['userSession'])){
   header("Location: ../index");
   exit;
 }elseif (isset($_SESSION['userSession'])){
-  $user_id = $_SESSION['userSession'];
+  $uid = $_SESSION['userSession'];
   $student = Database::getInstance()->select_from_while("students","matNo",$_GET['id']);
   $matNumber = $_GET['id'];
   $status = intval(Database::getInstance()->select_transcript($matNumber));
@@ -18,6 +18,9 @@ if(!isset($_SESSION['userSession'])){
     $deptID = $std['department_id'];
     $dpt = ucwords(Database::getInstance()->get_name_from_id("name","departments","department_id",$deptID));
     $level = $std['level'];
+  }
+  if (isset($_GET['n'])) {
+    Database::getInstance()->notify_viewed($_GET['n']);
   }
 }
 ?>
@@ -36,6 +39,19 @@ if(!isset($_SESSION['userSession'])){
                 <h5>Fullname: <?php echo $fullname; ?></h5>
                 <h5>Department : <?php echo $dpt; ?> </h5>
                 <h5>Level: <?php echo $level; ?></h5>
+                <h5>Status: <?php if ($status == 1) {?>
+                <div class="badge badge-success">Accepted</div>
+                <?php 
+                } elseif($status == 2) {
+                  ?>
+                  <div class="badge badge-danger">Rejected</div>
+                  <?php
+                }elseif($status == 0) {
+                  ?>
+                  <div class="badge badge-default">None</div>
+                  <?php
+                }
+                 ?></h5>
               </div>
               <div class="card-body">
                 <?php 
@@ -121,8 +137,8 @@ if(!isset($_SESSION['userSession'])){
                           foreach ($trans as $row) {
                             $code = Database::getInstance()->get_name_from_id("code","courses","courseID",$row['courseID']);
                             $title = Database::getInstance()->get_name_from_id("title","courses","courseID",$row['courseID']);
-                            $semester = Database::getInstance()->get_name_from_id("semester","courses","courseID",$row['courseID']);
-                            $level = Database::getInstance()->get_name_from_id("level","courses","courseID",$row['courseID']);
+                            $semester = $row['semester'];
+                            $level = $row['level'];
                             $ctype = Database::getInstance()->get_name_from_id("courseType","courses","courseID",$row['courseID']);
                             $score = $row['score'];
                             ?>
@@ -135,7 +151,7 @@ if(!isset($_SESSION['userSession'])){
                                 </td>
                                 <td class="text-center">
                                 <?php if ($semester == 1) {echo "1st";}else if($semester == 2){echo "2nd";}else{echo "Summer";} ?>
-                                </td>xml_error_stringx`
+                                </td>
                                 <td class="text-center">
                                 <?php echo $level; ?>
                                 </td>
@@ -179,7 +195,7 @@ if(!isset($_SESSION['userSession'])){
           var ins = "newRemark";
           var matNumb = "<?php echo $_GET['id']; ?>";
           var val = 1;
-          var user = "<?php echo $user_id; ?>"
+          var user = "<?php echo $uid; ?>"
           formData.append('matNumber',matNumb);
           formData.append('val',val);
           formData.append('user',user);
@@ -218,4 +234,16 @@ if(!isset($_SESSION['userSession'])){
             }
           });
       }
+
+      function sure(ID,name){ 
+        a.notify({
+            icon: 'pe-7s-trash',
+            message: "Transcript Rejected"
+
+          },{
+              type: 'success',
+              timer: 100000
+          });
+
+        }
 </script>

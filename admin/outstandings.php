@@ -9,8 +9,8 @@ if(!isset($_SESSION['userSession'])){
   header("Location: ../index");
   exit;
 }elseif (isset($_SESSION['userSession'])){
-  $user_id = $_SESSION['userSession'];
-  $deptID = Database::getInstance()->get_name_from_id("department_id","users","uid",$user_id);
+  $uid = $_SESSION['userSession'];
+  $deptID = Database::getInstance()->get_name_from_id("department_id","users","uid",$uid);
   $dpt = ucwords(Database::getInstance()->get_name_from_id("name","departments","department_id",$deptID));
   if (isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['level']) && !empty($_POST['level'])) {
     $studData = Database::getInstance()->select_outstanding($_POST['level'],$_POST['name']);

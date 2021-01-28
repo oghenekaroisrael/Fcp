@@ -9,8 +9,8 @@ if(!isset($_SESSION['userSession'])){
   header("Location: ../index");
   exit;
 }elseif (isset($_SESSION['userSession'])){
-  $user_id = $_SESSION['userSession'];
-  $dept= Database::getInstance()->get_name_from_id("department_id","users","uid",$user_id);
+  $uid = $_SESSION['userSession'];
+  $dept= Database::getInstance()->get_name_from_id("department_id","users","uid",$uid);
   $dpt = ucwords(Database::getInstance()->get_name_from_id("name","departments","department_id",$dept));
 
 }
@@ -58,7 +58,7 @@ option{
                            <div class="form-group">
                               <label>Bulletin Status</label>
                               <select name="status" class="form-control">
-                                    <option value="0">Old</option>
+                                    <option value="0">Passed</option>
                                     <option value="1">Current</option>
                               </select>
                           </div>
@@ -83,7 +83,7 @@ option{
                             <label>Graduating Year</label>
                             <select name="gyear" class="form-control">
                                 <?php
-                                  for ($i=intval(date("Y")); $i <= 2050; $i++) { 
+                                  for ($i=intval(date("Y"))-20; $i <= 2050; $i++) { 
                                     ?>
                                     <option value="<?php echo $i;?>"><?php echo $i;?></option>
                                     <?php
@@ -121,7 +121,7 @@ option{
         e.preventDefault();
 		var formData = new FormData(a(this)[0]);
     var ins = "newBulletin";
-    var user = "<?php echo $user_id; ?>";
+    var user = "<?php echo $uid; ?>";
     formData.append('user',user);
 		 formData.append('ins',ins);
           a.ajax({

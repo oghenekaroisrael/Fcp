@@ -68,9 +68,9 @@ if(!isset($_SESSION['userSession'])){
                                   <td class="text-center">
                                   <?php 
                                       if ($stat==0) {
-                                        echo "<div class='badge badge-default'>Inactive</div>";
+                                        echo "<div class='badge badge-default'>Passed</div>";
                                       }else{
-                                        echo "<div class='badge badge-success'>Active</div>";
+                                        echo "<div class='badge badge-success'>Current</div>";
                                       }
                                   ?>
                                   </td>

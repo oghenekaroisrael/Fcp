@@ -181,6 +181,8 @@
 		$score = $_POST['score'];
 		$id = $_POST['id'];
 		$matNumb = $_POST['matNo'];
+		$semester = $_POST['semester'];
+		$level = $_POST['level'];
 		
 		//$validator = new FormValidator();
 						
@@ -196,7 +198,7 @@
 			}
 			
 			if (count($score) != 0 && count($id) != 0) {
-				Database::getInstance()->updateTranscript($id, $score,$matNumb);
+				echo Database::getInstance()->updateTranscript($id, $score,$matNumb,$level,$semester);
 			}
 		
 		// } else {

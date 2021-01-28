@@ -2,14 +2,14 @@
 ob_start();
 session_start();
 include_once("inc/header.php"); 
-$active_page = "oustandings";
+$active_page = "oustanding";
 // Include database class
 include_once '../inc/db.php';
 if(!isset($_SESSION['userSession'])){
   header("Location: ../index");
   exit;
 }elseif (isset($_SESSION['userSession'])){
-  $user_id = $_SESSION['userSession'];
+  $uid = $_SESSION['userSession'];
   $student = Database::getInstance()->select_from_while("students","matNo",$_GET['id']);
   $matNumber = $_GET['id'];
   foreach ($student as $std) {
@@ -58,9 +58,6 @@ if(!isset($_SESSION['userSession'])){
                         <th class="text-center">
                             Remark
                         </th>
-                        <th class="text-center">
-                            Suggestion
-                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -73,7 +70,7 @@ if(!isset($_SESSION['userSession'])){
                             $level = Database::getInstance()->get_name_from_id("level","courses","courseID",$row['courseID']);
                             $ctype = Database::getInstance()->get_name_from_id("courseType","courses","courseID",$row['courseID']);
                             $score = $row['score'];
-
+                            $courseID = $row['courseID'];
                             ?>
                               <tr>
                                 <td class="text-center">
@@ -104,9 +101,6 @@ if(!isset($_SESSION['userSession'])){
                                 }
                                 ?>
                                 </td>
-                              <td class="text-center">
-                                  Add To 1st Semester 400 Level Courses
-                              </td>
                               </tr>
                             <?php
                           }  
@@ -150,7 +144,7 @@ if(!isset($_SESSION['userSession'])){
           var ins = "newRemark";
           var matNumb = "<?php echo $_GET['id']; ?>";
           var val = 2;
-          var user = "<?php echo $user_id; ?>"
+          var user = "<?php echo $uid; ?>"
           formData.append('matNumber',matNumb);          
           formData.append('val',val);
           formData.append('user',user);

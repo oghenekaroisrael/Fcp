@@ -77,6 +77,13 @@ body {
   text-align: left;
   background-color: #1e1e2f;
 }
+#home{
+  background-image: url('../img/bg1.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  background-blend-mode: overlay;
+}
 
 [tabindex="-1"]:focus {
   outline: 0 !important;
@@ -15887,7 +15894,7 @@ img {
 }
 
 .notification {
-  background: #fd5d93;
+  background: #ff0404;
   color: #ffffff;
   border-radius: 0.875rem;
   height: 6px;
@@ -15898,7 +15905,7 @@ img {
   font-weight: 800;
   top: 10px;
   right: 10px;
-  border: 1px solid #fd5d93;
+  border: 1px solid #ff0404;
 }
 
 .navbar-nav li {
