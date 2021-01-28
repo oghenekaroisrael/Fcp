@@ -125,7 +125,6 @@ if(!isset($_SESSION['userSession'])){
                             $level = Database::getInstance()->get_name_from_id("level","courses","courseID",$row['courseID']);
                             $ctype = Database::getInstance()->get_name_from_id("courseType","courses","courseID",$row['courseID']);
                             $score = $row['score'];
-
                             ?>
                               <tr>
                                 <td class="text-center">
@@ -136,7 +135,7 @@ if(!isset($_SESSION['userSession'])){
                                 </td>
                                 <td class="text-center">
                                 <?php if ($semester == 1) {echo "1st";}else if($semester == 2){echo "2nd";}else{echo "Summer";} ?>
-                                </td>
+                                </td>xml_error_stringx`
                                 <td class="text-center">
                                 <?php echo $level; ?>
                                 </td>
@@ -159,9 +158,7 @@ if(!isset($_SESSION['userSession'])){
                               </tr>
                             <?php
                           }  
-                      
                       ?>
-                      
                     </tbody>
                   </table>
                 </div>
