@@ -19,6 +19,8 @@ if(!isset($_SESSION['userSession'])){
     $dpt = ucwords(Database::getInstance()->get_name_from_id("name","departments","department_id",$deptID));
     $level = $std['level'];
   }
+  $dur = Database::getInstance()->get_name_from_id("duration","departments","department_id",$deptID)*100;
+  
   if (isset($_GET['n'])) {
     Database::getInstance()->notify_viewed($_GET['n']);
   }
@@ -52,6 +54,12 @@ if(!isset($_SESSION['userSession'])){
                   <?php
                 }
                  ?></h5>
+                 <h5>
+                  Total Outstandings : <?php $det = Database::getInstance()->select_outstanding1($matNumber);
+                  foreach ($det as $value) {
+                    echo $value['outstandings'];
+                  } ?> &#160;&#160;&#160;&#160;<a href="outstanding.php?id=<?php echo $matNumber; ?>"><i class="fas fa-eye text-primary"></i></a>
+                 </h5>
               </div>
               <div class="card-body">
                 <?php 
@@ -107,76 +115,186 @@ if(!isset($_SESSION['userSession'])){
                     </div>
                   </div>
                 </div>
-                <div class="table-responsive">
-                  <table class="table tablesorter " id="">
-                    <thead class=" text-primary">
-                      <tr>
-                        <th class="text-center">
-                          Course Code
-                        </th>
-                        <th class="text-center">
-                          Course Title
-                        </th>
-                        <th class="text-center">
-                          Semester
-                        </th>
-                        <th class="text-center">
-                            Level
-                        </th>
-                        <th class="text-center">
-                            Score
-                        </th>
-                        <th class="text-center">
-                            Remark
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                <div class="row">
                     <?php 
-                         $trans = Database::getInstance()->select_from_where2("transcript","matNo",$_GET['id']);
-                          foreach ($trans as $row) {
-                            $code = Database::getInstance()->get_name_from_id("code","courses","courseID",$row['courseID']);
-                            $title = Database::getInstance()->get_name_from_id("title","courses","courseID",$row['courseID']);
-                            $semester = $row['semester'];
-                            $level = $row['level'];
-                            $ctype = Database::getInstance()->get_name_from_id("courseType","courses","courseID",$row['courseID']);
-                            $score = $row['score'];
-                            ?>
-                              <tr>
-                                <td class="text-center">
-                                  <?php echo $code; ?>
-                                </td>
-                                <td class="text-center">
-                                <?php echo $title; ?>
-                                </td>
-                                <td class="text-center">
-                                <?php if ($semester == 1) {echo "1st";}else if($semester == 2){echo "2nd";}else{echo "Summer";} ?>
-                                </td>
-                                <td class="text-center">
-                                <?php echo $level; ?>
-                                </td>
-                                <td class="text-center">
-                                <?php echo $score; ?>
-                                </td>
-                                <td class="text-center">
-                                <?php 
-                                if ($ctype == 1 && $score >= 0 && $score <=39) {
-                                  echo "<div class='badge badge-danger'>Fail</div>";
-                                }else if ($ctype == 1 && $score >=  40 && $score <=100) {
-                                  echo "<div class='badge badge-success'>Pass</div>";
-                                }else if ($ctype > 1 && $score >= 0 && $score <=49) {
-                                  echo "<div class='badge badge-danger'>Fail</div>";
-                                }else if ($ctype > 1 && $score >= 50 && $score <=100) {
-                                  echo "<div class='badge badge-success'>Pass</div>";
-                                }
-                                ?>
-                                </td>
-                              </tr>
-                            <?php
-                          }  
-                      ?>
-                    </tbody>
-                  </table>
+                      for ($i=100; $i <= $dur; $i+=100) { 
+                        for ($j=1; $j <= 3; $j++) { 
+                          if ($j != 3) {
+                            
+                           ?>
+                           <div class="col-md-6">
+                            <div class="header text-center">
+                              <h4 class="title">
+                              <?php echo $i." Level"; 
+                              if ($j == 1) {
+                                echo "<br>First Semester";
+                              }else if ($j == 2) {
+                                echo "<br>Second Semester";
+                              }if ($j == 3) {
+                                echo "<br>Summer";
+                              }
+                              ?>
+                              </h4> 
+                            </div>
+                            <div class="">
+                              <table class="table tablesorter">
+                                <thead class=" text-primary">
+                                  <tr>
+                                    <th class="text-center">
+                                      Course Code
+                                    </th>
+                                    <th class="text-center">
+                                      Course Title
+                                    </th>
+                                    <th class="text-center">
+                                        Score
+                                    </th>
+                                    <th class="text-center">
+                                        Remark
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <?php 
+                                    $trans = Database::getInstance()->showTranscript($i,$j);
+                                      foreach ($trans as $row) {
+                                        $code = $row['code'];
+                                        $title = $row['title'];
+                                        $ctype = $row['courseType'];
+                                        $score1 = Database::getInstance()->get_name_from_id2("score","transcripttemp","matNo",$matNumber,"courseID",$row['courseID'],"courseID");
+                                        if (!empty($score1) && $score1 > 0) {
+                                          $score = $score1;
+                                        }else{
+                                          $score = 0;
+                                        }
+                                        ?>
+                                          <tr>
+                                            <td class="text-center">
+                                              <?php echo $code; ?>
+                                            </td>
+                                            <td class="text-center">
+                                            <?php echo $title; ?>
+                                            </td>
+                                            <td class="text-center">
+                                            <?php echo $score; ?>
+                                            </td>
+                                            <td class="text-center">
+                                            <?php 
+                                            if ($ctype == 1 && $score >= 0 && $score <=39) {
+                                              echo "<div class='badge badge-danger'>Fail</div>";
+                                            }else if ($ctype == 1 && $score >=  40 && $score <=100) {
+                                              echo "<div class='badge badge-success'>Pass</div>";
+                                            }else if ($ctype > 1 && $score >= 0 && $score <=49) {
+                                              echo "<div class='badge badge-danger'>Fail</div>";
+                                            }else if ($ctype > 1 && $score >= 50 && $score <=100) {
+                                              echo "<div class='badge badge-success'>Pass</div>";
+                                            }elseif ($ctype > 0 && $score == 0) {
+                                              echo "<div class='badge badge-default'>NG</div>";
+                                            }
+                                            ?>
+                                            </td>
+                                          </tr>
+                                        <?php
+                                      }  
+                                  
+                                  ?>
+                                  
+                                </tbody>
+                              </table>
+                            </div>
+                           </div>
+                           <?php
+                          } else {
+                            
+                           ?>
+                           <div class="col-md-12" style="margin-top: 30px;margin-bottom:30px;">
+                            <div class="header text-center">
+                              <h4 class="title">
+                              <?php echo $i." Level"; 
+                              if ($j == 1) {
+                                echo "<br>First Semester";
+                              }else if ($j == 2) {
+                                echo "<br>Second Semester";
+                              }if ($j == 3) {
+                                echo "<br>Summer";
+                              }
+                              ?>
+                              </h4> 
+                            </div>
+                            <div class="">
+                              <table class="table tablesorter">
+                                <thead class=" text-primary">
+                                  <tr>
+                                    <th class="text-center">
+                                      Course Code
+                                    </th>
+                                    <th class="text-center">
+                                      Course Title
+                                    </th>
+                                    <th class="text-center">
+                                        Score
+                                    </th>
+                                    <th class="text-center">
+                                        Remark
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <?php 
+                                    $trans = Database::getInstance()->showSummer($i,$j,$matNumber);
+                                      foreach ($trans as $row) {
+                                        $code = Database::getInstance()->get_name_from_id("code","courses","courseID",$row['courseID']);
+                                        $title = Database::getInstance()->get_name_from_id("title","courses","courseID",$row['courseID']);
+                                        $semester = $j;
+                                        $level = $i;
+                                        $ctype = Database::getInstance()->get_name_from_id("courseType","courses","courseID",$row['courseID']);
+                                        $score1 = $row['score'];
+                                        if (!empty($score1) && $score1 > 0) {
+                                          $score = $score1;
+                                        }else{
+                                          $score = 0;
+                                        }
+                                        ?>
+                                          <tr>
+                                            <td class="text-center">
+                                              <?php echo $code; ?>
+                                            </td>
+                                            <td class="text-center">
+                                            <?php echo $title; ?>
+                                            </td>
+                                            <td class="text-center">
+                                            <?php echo $score; ?>
+                                            </td>
+                                            <td class="text-center">
+                                            <?php 
+                                            if ($ctype == 1 && $score >= 0 && $score <=39) {
+                                              echo "<div class='badge badge-danger'>Fail</div>";
+                                            }else if ($ctype == 1 && $score >=  40 && $score <=100) {
+                                              echo "<div class='badge badge-success'>Pass</div>";
+                                            }else if ($ctype > 1 && $score >= 0 && $score <=49) {
+                                              echo "<div class='badge badge-danger'>Fail</div>";
+                                            }else if ($ctype > 1 && $score >= 50 && $score <=100) {
+                                              echo "<div class='badge badge-success'>Pass</div>";
+                                            }
+                                            ?>
+                                            </td>
+                                          </tr>
+                                        <?php
+                                      }  
+                                  
+                                  ?>
+                                  
+                                </tbody>
+                              </table>
+                            </div>
+                           </div>
+                           <?php
+                        
+                          }
+                          
+                        }
+                      }
+                    ?>
                 </div>
               </div>
             </div>

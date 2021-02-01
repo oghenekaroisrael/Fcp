@@ -63,47 +63,29 @@ if(!isset($_SESSION['userSession'])){
               </div>
               <div class="card-body">
               <div class="row">
-              <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-              <div class="card card-stats bg-info">
-                <div class="card-header card-header-warning card-header-icon">
-                  <div class="card-icon">
-                    Course Units
-                  </div>
-                  <p class="card-category">Stat</p>
-                  <h3 class="card-title">49/169
-                    <small>Units</small>
-                  </h3>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-              <div class="card card-stats bg-info">
-                <div class="card-header card-header-warning card-header-icon">
-                  <div class="card-icon">
-                    Years
-                  </div>
-                  <p class="card-category">Stat</p>
-                  <h3 class="card-title">3/4
-                    <small>Years</small>
-                  </h3>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-              <div class="card card-stats bg-info">
-                <div class="card-header card-header-warning card-header-icon">
-                  <div class="card-icon">
-                    Semesters
-                  </div>
-                  <p class="card-category">Stat</p>
-                  <h3 class="card-title">5/8
-                    <small>Semesters</small>
-                  </h3>
-                </div>
-              </div>
-            </div>
+                    <?php 
+                      $dur = Database::getInstance()->get_name_from_id("duration","departments","department_id",$dept);
+                      for ($i=100; $i <= ($dur * 100); $i+=100) { 
+                        ?>
+                        
+                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
+                              <div class="card card-stats bg-info">
+                                <div class="card-header card-header-warning card-header-icon">
+                                <form action="compute2" method="post">
+                                  <div class="card-icon text-center">
+                                    <?php echo $i; ?> Level
+                                  </div>
+                                  <input type="hidden" name="level" value="<?php echo $i; ?>">
+                                  <input type="hidden" name="dashboard" value="yes">
+                                  <h3 class="card-title"><button type="submit" class="btn btn-info">Enter Scores</button></h3>
+                                
+                          </form>
+                          </div>
+                              </div>
+                            </div>
+                        <?php
+                      }
+                    ?>
               </div>
               </div>
             </div>
@@ -113,3 +95,9 @@ if(!isset($_SESSION['userSession'])){
     </div>
   </div>
 <?php include_once("inc/footer.php"); ?>
+<script type="text/javascript">
+	 var a=jQuery .noConflict();
+      function select(level){ 
+        
+      }
+</script>

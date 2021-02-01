@@ -404,6 +404,20 @@ error_reporting(1);
 		}
 	}
 
+	public function select_from_where_no2($tab,$col,$whe, $col2, $whe2){
+		try {
+			$stmt = $this->db->prepare("SELECT * FROM $tab WHERE $col = ? AND $col2 = ?");
+			$stmt->execute([$whe,$whe2]);
+			$arr = $stmt->fetchAll();
+			return $arr;
+			$stmt = null;	
+		} catch (PDOException $e) {
+			// For handling error
+			echo 'Error: ' . $e->getMessage();
+			
+		}		
+	}
+
 
 	
 
@@ -468,7 +482,7 @@ error_reporting(1);
 	
 	public function select_from_where_ord2($tab,$col,$whe, $col2, $whe2,$tab_id,$ord){
 		try {
-			$stmt = $this->db->prepare("SELECT * FROM $tab WHERE $col = $whe AND $col2 = '".$whe2."' ORDER BY $tab_id $ord");
+			$stmt = $this->db->prepare("SELECT * FROM $tab WHERE $col = ? AND $col2 = ? ORDER BY $tab_id $ord");
 			$stmt->execute([$whe,$whe2]);
 			$arr = $stmt->fetchAll();
 			return $arr;
@@ -1101,24 +1115,43 @@ error_reporting(1);
         try {
             $status = 0;
             for ($i=0; $i < count($id); $i++) { 
-                $que=$this->db->prepare("SELECT TransID FROM transcripttemp WHERE `courseID` = ? AND `matNo` = ?");
-                $que->execute([$id[$i],$matNumb]);
-                $count = $que->rowCount();
-                if ($count == 0) {
-                    if (!empty($score[$i])) {
+                if (!empty($score[$i])) {
                         $stmt = $this->db->prepare("INSERT INTO transcripttemp(`courseID`,`score`,`matNO`,`status`,`level`,`semester`) 
                     VALUES (?,?,?,?,?,?)");
-                    $stmt->execute([$id[$i],$score[$i],$matNumb,$status,$level,$semester]);
+                    $stmt->execute([$id[$i],$score[$i],$matNumb,$status,$level,$semester[$i]]);
                     $stmt = null;
-                    }
-                }else{
-                    if (!empty($score[$i])) {
-                        $stmt = $this->db->prepare("UPDATE transcripttemp SET `courseID` = ?,`score` = ?,`matNO` = ?,`status` = ?,`level`=?,`semester` = ? WHERE `courseID` = ? AND `matNo` = ?");
-                        $stmt->execute([$id[$i],$score[$i],$matNumb,$status,$level,$semester,$id[$i],$matNumb]);
-                        $stmt = null;
-                    }
                 }
             }
+            return "Done";
+            } catch (PDOException $e) {
+                // For handling error
+                echo 'Error: ' . $e->getMessage();			
+            }
+	}
+	
+	public function showTranscript($level,$semester)
+    {
+        try {
+            $que= $this->db->prepare("SELECT * FROM courses WHERE `level` = ? AND `semester` = ? 
+            ORDER BY `level`,`semester` ASC");
+			$que->execute([$level,$semester]);
+			return $que;
+			$que = null;
+            return "Done";
+            } catch (PDOException $e) {
+                // For handling error
+                echo 'Error: ' . $e->getMessage();			
+            }
+	}
+	
+	public function showSummer($level,$semester,$matNumber)
+    {
+        try {
+            $que= $this->db->prepare("SELECT * FROM transcripttemp WHERE `level` = ? AND `semester` = ? AND `matNo` = ? 
+            ORDER BY `level`,`semester` ASC");
+			$que->execute([$level,$semester,$matNumber]);
+			return $que;
+			$que = null;
             return "Done";
             } catch (PDOException $e) {
                 // For handling error
@@ -3458,9 +3491,10 @@ error_reporting(1);
 		try {
 			$que= $this->db->prepare("SELECT * FROM students a 
             LEFT JOIN transcript b ON a.matNo = b.matNo
+			AND EXISTS(SELECT courseID FROM `transcript` b WHERE a.matNo = b.matNo)
             GROUP BY b.matNo 
             ORDER BY b.TransID DESC");
-			$que->execute([]);
+			$que->execute();
 			return $que;
 			$que = null;			
 		} catch (PDOException $e) {
@@ -3515,7 +3549,7 @@ error_reporting(1);
     
     public function select_outstanding1($matNumber){
 		try {
-			$que= $this->db->prepare("SELECT
+			$que= $this->db->prepare("SELECT COUNT(a.matNo) as outstandings,
             b.courseID,b.score as score,b.level,b.semester FROM students a 
             LEFT JOIN transcripttemp b ON a.matNo = b.matNo                     
             LEFT JOIN courses c ON b.courseID = c.courseID           
