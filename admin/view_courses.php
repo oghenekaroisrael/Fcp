@@ -11,7 +11,6 @@ if(!isset($_SESSION['userSession'])){
 }elseif (isset($_SESSION['userSession'])){
   $uid = $_SESSION['userSession'];
   $bid = $_GET['bid'];
-  $dur = 
   $dept = intval(Database::getInstance()->get_name_from_id("department_id","bulletin","bulletinID",$bid));
 }
 ?>
@@ -32,8 +31,8 @@ if(!isset($_SESSION['userSession'])){
               </div>
               <?php 
                 $lvl = Database::getInstance()->get_name_from_id("duration","departments","department_id",$dept)*100;
-              
-                for ($level=100; $level < $lvl; $level+=100) { 
+                
+                for ($level=100; $level <= $lvl; $level+=100) { 
                   ?>
                   <div class="container-fluid">
                           <h3 class="title text-center"><?php echo $level; ?> Level Courses</h3>

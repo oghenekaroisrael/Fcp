@@ -37,16 +37,23 @@
                 <ul class="dropdown-menu dropdown-menu-right dropdown-navbar">
                 <?php 
                     $notifications = Database::getInstance()->show_notification_all($matNumber);
-                    foreach ($notifications as $value) {
-                      if ($value['status'] == 1) {
-                        ?>
-                          <li class="nav-link"><a href="<?php echo $value['link']; ?>?n=<?php echo $value['notificationID']; ?>" class="nav-item dropdown-item"><?php echo $value['message']; ?></a></li>
-                        <?php
-                      }else if ($value['status'] == 0) {
-                        ?>
-                          <li class="nav-link"><a href="<?php echo $value['link']; ?>?n=<?php echo $value['notificationID']; ?>" class="nav-item dropdown-item"><b><?php echo $value['message']; ?></b></a></li>
-                        <?php
+                    if (count($notifications) > 0) {
+                      foreach ($notifications as $value) {
+                        if ($value['status'] == 1) {
+                          
+                          ?>
+                            <li class="nav-link"><a href="<?php echo $value['link']; ?>&n=<?php echo $value['notificationID']; ?>" class="nav-item dropdown-item"><?php echo $value['message']; ?></a></li>
+                          <?php
+                        }else if ($value['status'] == 0) {
+                          ?>
+                            <li class="nav-link"><a href="<?php echo $value['link']; ?>&n=<?php echo $value['notificationID']; ?>" class="nav-item dropdown-item"><b><?php echo $value['message']; ?></b></a></li>
+                          <?php
+                        }
                       }
+                    }else{
+                      ?>
+                            <li class="nav-link" style="color: #000;">No Notifications</li>
+                          <?php
                     }
                   ?>
                   </ul>
